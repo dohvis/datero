@@ -1,4 +1,6 @@
 # Datero
+[![Build Status](https://travis-ci.org/nerogit/datero.svg?branch=master)](https://travis-ci.org/nerogit/datero)
+
 I wanna have a datetime. Datero = date+nero
 
 ```python

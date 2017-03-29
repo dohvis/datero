@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import unittest
 from datetime import datetime, timedelta
 from datero import Date, Day
