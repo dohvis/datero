@@ -7,7 +7,10 @@ I wanna have a datetime. Datero = date+nero
 >>> someday = today + Day(1)
 >>> print(someday.weekday())
 "일요일"
->>> someday2 = today + Week(3)
+>>> someday2 = today + Day(3)
 >>> print(someday2)
-<Date [2017년 4월 22일]>
+<Date [2017년 4월 4일]>
+>>> someday3 = today - Day1(3)
+>>> print(someday3)
+<Date [2017년 3월 31일]>
 ```
