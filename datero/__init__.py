@@ -7,8 +7,8 @@ def is_leap_year(year):
 
 
 class Date:
-    def __init__(self, year=1, month=1, day=1):
-        self.year= 1
+    def __init__(self, year, month, day):
+        self.year = 1
         self.month = 1
         self.day = 1
         self.set_date(year, month, day)
@@ -20,6 +20,7 @@ class Date:
         days = self._ymd2ord(self.year, self.month, self.day) + getattr(other, 'day')
 
         year, month, day = self._toordinal2ymd(days)
+        # self.add_date()
         self.set_date(year, month, day)
         return self
 
@@ -70,10 +71,11 @@ class Date:
             year += 1
             tmp = days
             days -= 366 if is_leap_year(year) else 365
-            if days < 0:
+            if days < 1:
                 days = tmp
                 break
-        print('days: %d' % days)
+
+        if days == 0: print('year: %d, days: %d' % (year, days))
         month = 0
         day = 0
 
