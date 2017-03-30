@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 
@@ -6,52 +7,20 @@ def is_leap_year(year):
 
 
 class Date:
-    def __init__(self, year, month, day):
-        self.year = year
-        self.month = self.set_month(month)
-        self.day = self.set_day(day)
-
-    def set_month(self, month):
-        if not (1 <= month <= 12):
-            raise ValueError('Invalid month, month must between 1 and 12. Not %d' % month)
-        self.month = month
-        return month
-
-    def set_day(self, day):
-        dim = self._days_in_month(self.year, self.month)
-        if not (1 <= day <= dim):
-            raise ValueError('Invalid day, day must between 1 and %d' % dim)
-        self.day = day
-        return day
-
-    def __str__(self):
-        return '<Date [{year}년 {month}월 {day}일]>'.format(year=self.year, month=self.month, day=self.day)
+    def __init__(self, year=1, month=1, day=1):
+        self.year= 1
+        self.month = 1
+        self.day = 1
+        self.set_date(year, month, day)
 
     def __add__(self, other):
         if other.__class__.__name__ != 'Day':
             # Why support only day: http://egloos.zum.com/mcchae/v/11203068
             raise NotImplemented
-
         days = self._ymd2ord(self.year, self.month, self.day) + getattr(other, 'day')
-        year = 0
-        while days > 0:
-            year += 1
-            tmp = days
-            days -= 366 if is_leap_year(year) else 365
-            if days < 0:
-                days = tmp
-                break
-        month = 0
-        day = 0
 
-        while days > 0:
-            month += 1
-            day = days
-            days -= self._days_in_month(year, month)
-
-        self.year = year
-        self.month = month
-        self.day = day
+        year, month, day = self._toordinal2ymd(days)
+        self.set_date(year, month, day)
         return self
 
     def __sub__(self, other):
@@ -60,31 +29,12 @@ class Date:
             raise NotImplemented
 
         days = self._ymd2ord(self.year, self.month, self.day) - getattr(other, 'day')
-        year = 0
-        while days > 0:
-            year += 1
-            tmp = days
-            days -= 366 if is_leap_year(year) else 365
-            if days < 0:
-                days = tmp
-                break
-        month = 0
-        day = 0
-
-        while days > 0:
-            month += 1
-            day = days
-            days -= self._days_in_month(year, month)
-
-        self.year = year
-        self.month = month
-        self.day = day
+        year, month, day = self._toordinal2ymd(days)
+        self.set_date(year, month, day)
         return self
 
-    @staticmethod
-    def _days_to_date():
-        years = [year for year in range(1, 736616 // 365)]
-        filter(lambda year: is_leap_year(year), years)
+    def __str__(self):
+        return '<Date [{year}년 {month}월 {day}일]>'.format(year=self.year, month=self.month, day=self.day)
 
     @staticmethod
     def _days_in_month(year, month):
@@ -114,6 +64,40 @@ class Date:
             raise ValueError('Invalid day, day must between 1 and %d' % dim)
         return sum([self._days_before_year(year), self._days_before_month(year, month), day])
 
+    def _toordinal2ymd(self, days):
+        year = 0
+        while days > 0:
+            year += 1
+            tmp = days
+            days -= 366 if is_leap_year(year) else 365
+            if days < 0:
+                days = tmp
+                break
+        print('days: %d' % days)
+        month = 0
+        day = 0
+
+        while days > 0:
+            day = days
+            month += 1
+            days -= self._days_in_month(year, month)
+
+        return year, month, day
+
+    def set_date(self, year, month, day):
+        if not (1 <= month <= 12):
+            raise ValueError('Invalid month, month must between 1 and 12. Not %d' % month)
+        self.month = month
+
+        dim = self._days_in_month(year, month)
+        if not (1 <= day <= dim):
+            raise ValueError('Invalid day, day on %d/%d month must between 1 and %d. Not %d' % (
+                year, month, dim, day
+            ))
+        self.day = day
+        self.year = year
+        return True
+
     def weekday(self):
         week_days = ['월', '화', '수', '목', '금', '토', '일', ]
         remainder = (self._ymd2ord(self.year, self.month, self.day) + 6) % 7
@@ -121,12 +105,6 @@ class Date:
         return '{}요일'.format(week_days[remainder])
 
 
-class TimeDelta:
-    def __init__(self, timedelta):
-        pass
-
-
-class Day(TimeDelta):
+class Day:
     def __init__(self, day):
-        super(Day, self).__init__(day)
         self.day = day
